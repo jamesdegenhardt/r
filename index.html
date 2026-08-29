@@ -14,7 +14,7 @@
 <body>
 <main class="wrap">
 <section id="menu" class="screen active">
-  <header class="brand"><h1>SUDOKU<span>WORDLE</span></h1><p>Letters. Logic. One beautifully unfair grid.</p><p><a href="sudokuwordle-manual.html" style="color:var(--gold)">Open Field Manual</a></p></header>
+  <header class="brand"><h1>SUDOKU<span>WORDLE</span></h1><p>Letters. Logic. One beautifully unfair grid.</p><p><a href="sudokuwordle-manual.html" style="color:var(--gold)">Open Field Manual</a></p><p class="made-by">Made by James Degenhardt</p></header>
   <div class="panel">
     <h2>Grid size</h2><div id="sizes" class="choice-row"></div>
     <h2>Difficulty</h2><div id="diffs" class="choice-row"></div>
@@ -82,27 +82,41 @@ function generate(n){const words=uniqueWords(n),rows=Array(n),assigned=Array(n).
  function seek(count){if(count===n)return true;if(++nodes>1000000)return false;let best=-1,bestWords=null;for(let r=0;r<n;r++)if(!assigned[r]){let options=candidates(r);if(!options.length)return false;if(!bestWords||options.length<bestWords.length){best=r;bestWords=options}}for(const word of shuffle(bestWords)){assigned[best]=true;rows[best]=word;for(let c=0;c<n;c++){cols[c].add(word[c]);if(boxes)boxes[boxId(best,c,n,BOX[n])].add(word[c])}if(seek(count+1))return true;for(let c=0;c<n;c++){cols[c].delete(word[c]);if(boxes)boxes[boxId(best,c,n,BOX[n])].delete(word[c])}assigned[best]=false;rows[best]=undefined}return false}return seek(0)?rows:null}
 function fallbackSolution(n){const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.slice(0,n).split(''),band=BOX[n]?BOX[n][0]:1,stack=BOX[n]?BOX[n][1]:1;return Array.from({length:n},(_,r)=>{let shift=BOX[n]?((r%band)*stack+Math.floor(r/band))%n:r;return Array.from({length:n},(_,c)=>alphabet[(shift+c)%n]).join('')})}
 function build(){let solution=settings.crossword&&CROSSWORD[settings.size]?CROSSWORD[settings.size]:(settings.size<8?generate(settings.size):null);if(!solution)solution=fallbackSolution(settings.size);const d=DIFF.find(x=>x[0]===settings.diff),n=settings.size;if(settings.crossword){let columns=Array.from({length:n},(_,c)=>solution.map(row=>row[c]).join(''));WORDS[n].push(...solution,...columns)}const mask=Array.from({length:n},()=>Array(n).fill(false));for(let r=0;r<n;r++)mask[r][rand(n)]=true;let target=settings.mode==='blueprint'?Math.ceil(n*n/2):Math.max(n,Math.round(n*n*d[2])),cells=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(!mask[r][c])cells.push([r,c]);shuffle(cells);for(let i=n;i<target;i++)mask[cells[i-n][0]][cells[i-n][1]]=true;const letters=[...new Set(solution.join(''))],decoys='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(x=>!letters.includes(x)),decoyCount=Math.min(decoys.length,Math.max(5,Math.min(8,d[3]+4)));return{solution:solution.map(w=>w.split('')),mask,letters:shuffle([...new Set([...letters,...shuffle(decoys).slice(0,decoyCount)])])}}
-function newGame(){const balance=getModeBalance();Object.assign(state,build(),{n:settings.size,player:[],status:[],locked:[],notes:Array.from({length:settings.size},()=>Array.from({length:settings.size},()=>new Set())),rowLocked:Array(settings.size).fill(false),permanent:Array(settings.size).fill(false),blueprintRows:[],rowFeedback:Array(settings.size).fill(null),required:Array(settings.size).fill(null).map(()=>new Set()),rank:{},active:0,selected:null,wrong:0,wrongLimit:balance.wrongLimit,strikes:0,moves:0,guesses:0,score:0,coins:Number(localStorage.getItem(coinsKey)||0),paused:false,over:false,time:0,conveyorElapsed:0,hints:0,started:Date.now(),guessDistribution:Array(settings.size+1).fill(0),hintTier:1,history:[]});state.player=state.mask.map((row,r)=>row.map((given,c)=>given?state.solution[r][c]:null));state.status=state.mask.map(row=>row.map(()=>null));state.locked=state.mask.map(row=>row.slice());if(settings.mode==='blueprint'){let count=Math.min(settings.size-1,settings.size>=7?4:3),rows=shuffle(Array.from({length:settings.size},(_,i)=>i)).slice(0,count);rows.forEach(r=>{let answer=state.solution[r].join(''),guess=WORDS[settings.size].find(word=>word!==answer&&word.length===settings.size)||answer.split('').reverse().join('');state.blueprintRows.push(r);state.player[r]=guess.split('');state.rowFeedback[r]=feedbackSummary(evaluate(state.player[r],state.solution[r]));state.locked[r]=Array(settings.size).fill(true);state.rowLocked[r]=true;state.permanent[r]=true});}if(settings.mode==='timed'){let d=DIFF.find(x=>x[0]===settings.diff);state.time=Math.max(75,Math.round(settings.size*settings.size*4*d[4]));}clearInterval(timer);if(['timed','conveyor'].includes(settings.mode))timer=setInterval(()=>{if(!state.paused&&!state.over){if(settings.mode==='timed'&&--state.time<=0){state.time=0;end(false,'Time ran out.')}if(settings.mode==='conveyor'&&++state.conveyorElapsed>=45)advanceConveyor();renderStats()}},1000);}
+function newGame(){const balance=getModeBalance();Object.assign(state,build(),{n:settings.size,player:[],status:[],locked:[],notes:Array.from({length:settings.size},()=>Array.from({length:settings.size},()=>new Set())),rowLocked:Array(settings.size).fill(false),permanent:Array(settings.size).fill(false),blueprintRows:[],rowFeedback:Array(settings.size).fill(null),required:Array(settings.size).fill(null).map(()=>new Set()),rank:{},active:0,selected:null,wrong:0,wrongLimit:balance.wrongLimit,strikes:0,moves:0,guesses:0,score:0,coins:Number(localStorage.getItem(coinsKey)||0),paused:false,over:false,time:0,conveyorElapsed:0,hints:0,started:Date.now(),guessDistribution:Array(settings.size+1).fill(0),hintTier:1,history:[],lastLetter:null,lastSignal:null,hintFlash:null,rowPulse:null,boardScan:false,starBurst:false});state.player=state.mask.map((row,r)=>row.map((given,c)=>given?state.solution[r][c]:null));state.status=state.mask.map(row=>row.map(()=>null));state.locked=state.mask.map(row=>row.slice());if(settings.mode==='blueprint'){let count=Math.min(settings.size-1,settings.size>=7?4:3),rows=shuffle(Array.from({length:settings.size},(_,i)=>i)).slice(0,count);rows.forEach(r=>{let answer=state.solution[r].join(''),guess=WORDS[settings.size].find(word=>word!==answer&&word.length===settings.size)||answer.split('').reverse().join('');state.blueprintRows.push(r);state.player[r]=guess.split('');state.rowFeedback[r]=feedbackSummary(evaluate(state.player[r],state.solution[r]));state.locked[r]=Array(settings.size).fill(true);state.rowLocked[r]=true;state.permanent[r]=true});}if(settings.mode==='timed'){let d=DIFF.find(x=>x[0]===settings.diff);state.time=Math.max(75,Math.round(settings.size*settings.size*4*d[4]));}state.boardScan=true;setTimeout(()=>{state.boardScan=false;renderGrid();},1000);clearInterval(timer);if(['timed','conveyor'].includes(settings.mode))timer=setInterval(()=>{if(!state.paused&&!state.over){if(settings.mode==='timed'&&--state.time<=0){state.time=0;end(false,'Time ran out.')}if(settings.mode==='conveyor'&&++state.conveyorElapsed>=45)advanceConveyor();renderStats()}},1000);}
 function conflicts(){const n=state.n,out=state.player.map(row=>row.map(()=>false));const mark=groups=>Object.values(groups).forEach(a=>{if(a.length>1)a.forEach(([r,c])=>out[r][c]=true)});for(let r=0;r<n;r++){let g={};for(let c=0;c<n;c++){let x=state.player[r][c];if(x)(g[x]??=[]).push([r,c])}mark(g)}for(let c=0;c<n;c++){let g={};for(let r=0;r<n;r++){let x=state.player[r][c];if(x)(g[x]??=[]).push([r,c])}mark(g)}if(BOX[n]){let g={};for(let r=0;r<n;r++)for(let c=0;c<n;c++){let x=state.player[r][c];if(x)(g[boxId(r,c,n,BOX[n])]??={})[x]=(g[boxId(r,c,n,BOX[n])][x]??[]).concat([[r,c]])}Object.values(g).forEach(x=>mark(x))}return out}
 function place(letter){if(!state.selected||state.over||state.paused)return;let{r,c}=state.selected;if(state.locked[r][c])return;if(state.rowLocked[r])state.rowLocked[r]=false;if(settings.notes){state.notes[r][c].has(letter)?state.notes[r][c].delete(letter):state.notes[r][c].add(letter);renderGrid();return}state.notes[r][c].clear();if(settings.mode==='strike'&&letter!==state.solution[r][c]){state.strikes++;message('Sudoku clash! Strike '+state.strikes+'/3');cellAnim(r,c,'shake');render();if(state.strikes>=3)return end(false,'Three strikes ended the run.')}else{state.player[r][c]=letter;state.moves++;if(settings.mode==='strike'){state.status[r][c]='green';state.locked[r][c]=true;state.score+=15;if(state.player[r].every((x,i)=>x===state.solution[r][i]))state.rowLocked[r]=true}cellAnim(r,c,'pop');nextCell(r,c);render();checkWin()}}
 function nextCell(r,c){for(let x=c+1;x<state.n;x++)if(!state.locked[r][x]&&!state.player[r][x])return state.selected={r,c:x};state.selected=null}
 function cellAnim(r,c,cls){state.anim={r,c,cls};setTimeout(()=>{state.anim=null;renderGrid()},300)}
+function triggerBoardPulse(){state.boardScan=true;setTimeout(()=>{state.boardScan=false;renderGrid();},700)}
 function evaluate(guess,sol){let out=Array(guess.length).fill('gray'),remain={};guess.forEach((x,i)=>{if(x===sol[i])out[i]='green';else remain[sol[i]]=(remain[sol[i]]||0)+1});guess.forEach((x,i)=>{if(out[i]==='gray'&&remain[x]>0){out[i]='yellow';remain[x]--}});return out}
 function feedbackSummary(feed){let counts=feed.reduce((all,status)=>(all[status]++,all),{green:0,yellow:0,gray:0});return `${counts.green} Green<br>${counts.yellow} Yellow<br>${counts.gray} Gray`}
 function advanceConveyor(){if(settings.mode!=='conveyor'||state.over)return;let n=state.n,incoming=state.solution[n-1].slice();state.permanent[0]=true;state.locked[0]=Array(n).fill(true);state.rowLocked[0]=true;for(let r=1;r<n-1;r++){state.solution[r]=state.solution[r+1];state.player[r]=state.player[r+1];state.status[r]=state.status[r+1];state.locked[r]=state.locked[r+1];state.mask[r]=state.mask[r+1];state.notes[r]=state.notes[r+1];state.rowLocked[r]=state.rowLocked[r+1];state.permanent[r]=state.permanent[r+1];state.rowFeedback[r]=state.rowFeedback[r+1]}state.solution[n-1]=incoming;state.player[n-1]=Array(n).fill(null);state.status[n-1]=Array(n).fill(null);state.locked[n-1]=Array(n).fill(false);state.mask[n-1]=Array(n).fill(false);state.notes[n-1]=Array.from({length:n},()=>new Set());state.rowLocked[n-1]=false;state.permanent[n-1]=false;state.rowFeedback[n-1]=null;state.active=n-1;state.selected={r:n-1,c:0};state.wrong=0;state.conveyorElapsed=0;message('Conveyor advanced. The top row is permanent.');render()}
-function submit(){let r=state.active;if(state.over||state.paused||state.rowLocked[r]||settings.mode==='blueprint')return;if(state.player[r].some(x=>!x))return message('Fill every cell first.');if(settings.mode==='strike')return checkWin();let feed=evaluate(state.player[r],state.solution[r]);state.rowFeedback[r]=feedbackSummary(feed);if(settings.hard){let missing=[...state.required[r]].filter(letter=>!state.player[r].includes(letter));if(missing.length)return message('Hard mode requires: '+missing.join(', '))}state.required[r]=new Set([...state.required[r],...feed.map((x,c)=>x==='yellow'?state.player[r][c]:null).filter(Boolean)]);feed.forEach((x,c)=>{state.status[r][c]=x;state.rank[state.player[r][c]]=Math.max(state.rank[state.player[r][c]]||0,{green:3,yellow:2,gray:1}[x])});state.moves++;state.guesses++;state.guessDistribution[Math.min(state.guesses,state.n)]++;if(settings.fog)setTimeout(()=>{if(state.rowFeedback[r]===feedbackSummary(feed))state.rowFeedback[r]=null;renderGrid()},3000);if(feed.every(x=>x==='green')){state.rowLocked[r]=true;state.score+=Math.round(getModeBalance().rowReward*state.n*getModeBalance().scoreBonus);state.coins+=120 + state.n*12;saveCoins();if(settings.mode==='timed')state.time+=getModeBalance().extraTime;message('Row locked. Nice.')}else{state.wrong++;state.score=Math.max(0,Math.round(state.score-12*getModeBalance().scoreBonus));message('Not quite. Keep the pattern in mind.');if(['wordle','challenger'].includes(settings.mode)&&!isNoFailMode()&&state.wrong>=state.wrongLimit)return end(false,'The shared guess pool is exhausted.');if(settings.mode==='timed')state.time=Math.max(0,state.time-getModeBalance().timePenalty);if(settings.mode==='conveyor'&&state.wrong%2===0)advanceConveyor()}render();checkWin()}
+function submit(){let r=state.active;if(state.over||state.paused||state.rowLocked[r]||settings.mode==='blueprint')return;if(state.player[r].some(x=>!x))return message('Fill every cell first.');if(settings.mode==='strike')return checkWin();let feed=evaluate(state.player[r],state.solution[r]);state.rowFeedback[r]=feedbackSummary(feed);state.rowPulse=r;triggerBoardPulse();setTimeout(()=>{state.rowPulse=null;renderGrid();},700);if(settings.hard){let missing=[...state.required[r]].filter(letter=>!state.player[r].includes(letter));if(missing.length)return message('Hard mode requires: '+missing.join(', '))}state.required[r]=new Set([...state.required[r],...feed.map((x,c)=>x==='yellow'?state.player[r][c]:null).filter(Boolean)]);feed.forEach((x,c)=>{state.status[r][c]=x;state.rank[state.player[r][c]]=Math.max(state.rank[state.player[r][c]]||0,{green:3,yellow:2,gray:1}[x]);if(x==='green'){state.lastSignal={r,c};setTimeout(()=>{if(state.lastSignal&&state.lastSignal.r===r&&state.lastSignal.c===c){state.lastSignal=null;renderGrid();}},420)}});state.moves++;state.guesses++;state.guessDistribution[Math.min(state.guesses,state.n)]++;if(settings.fog)setTimeout(()=>{if(state.rowFeedback[r]===feedbackSummary(feed))state.rowFeedback[r]=null;renderGrid()},3000);if(feed.every(x=>x==='green')){state.rowLocked[r]=true;state.score+=Math.round(getModeBalance().rowReward*state.n*getModeBalance().scoreBonus);state.coins+=120 + state.n*12;saveCoins();if(settings.mode==='timed')state.time+=getModeBalance().extraTime;message('Row locked. Nice.')}else{state.wrong++;state.score=Math.max(0,Math.round(state.score-12*getModeBalance().scoreBonus));message('Not quite. Keep the pattern in mind.');if(['wordle','challenger'].includes(settings.mode)&&!isNoFailMode()&&state.wrong>=state.wrongLimit)return end(false,'The shared guess pool is exhausted.');if(settings.mode==='timed')state.time=Math.max(0,state.time-getModeBalance().timePenalty);if(settings.mode==='conveyor'&&state.wrong%2===0)advanceConveyor()}render();checkWin()}
 function validColumns(){if(!settings.crossword)return true;for(let c=0;c<state.n;c++){let word=state.solution.map(row=>row[c]).join('');if(!WORDS[state.n].includes(word))return false}return true}
 function checkWin(){let solved=settings.mode==='blueprint'?state.player.every((row,r)=>state.blueprintRows.includes(r)||row.every((x,c)=>x===state.solution[r][c])):settings.mode==='conveyor'?state.player.every((row,r)=>state.permanent[r]||row.every((x,c)=>x===state.solution[r][c])):state.rowLocked.every(Boolean);if(solved){if(!validColumns())return message('Dual-axis mode needs valid words in every column.');end(true,'Grid solved!')}}
-function hint(){if(settings.mode==='nohint'){message('No-hint mode is active.');return}if(state.over||state.paused)return;const cost=getModeBalance().hintBase*(state.hintTier||1);if(state.score<cost)return message('You need '+cost+' points for this hint tier.');let cells=[];for(let r=0;r<state.n;r++)for(let c=0;c<state.n;c++)if(!state.locked[r][c]&&state.player[r][c]!==state.solution[r][c])cells.push([r,c]);if(!cells.length)return message('No hint needed.');const [r,c]=cells[rand(cells.length)];state.player[r][c]=state.solution[r][c];state.notes[r][c].clear();state.status[r][c]='green';state.locked[r][c]=true;state.score-=cost;state.hints++;state.hintTier=Math.min(3,(state.hintTier||1)+1);state.selected={r,c};nextCell(r,c);cellAnim(r,c,'pop');render();checkWin()}
+function hint(){if(settings.mode==='nohint'){message('No-hint mode is active.');return}if(state.over||state.paused)return;const cost=getModeBalance().hintBase*(state.hintTier||1);if(state.score<cost)return message('You need '+cost+' points for this hint tier.');let cells=[];for(let r=0;r<state.n;r++)for(let c=0;c<state.n;c++)if(!state.locked[r][c]&&state.player[r][c]!==state.solution[r][c])cells.push([r,c]);if(!cells.length)return message('No hint needed.');const [r,c]=cells[rand(cells.length)];state.player[r][c]=state.solution[r][c];state.notes[r][c].clear();state.status[r][c]='green';state.locked[r][c]=true;state.score-=cost;state.hints++;state.hintTier=Math.min(3,(state.hintTier||1)+1);state.hintFlash=[r,c];state.lastSignal={r,c};state.selected={r,c};nextCell(r,c);cellAnim(r,c,'pop');setTimeout(()=>{state.hintFlash=null;state.lastSignal=null;renderGrid();},420);render();checkWin()}
 function purge(){let cost=purgeCost(),decoys=state.letters.filter(letter=>!state.solution.flat().includes(letter));if(state.over||state.paused)return;if(state.coins<cost)return message('Need '+cost+' coins for Letter Purge.');if(decoys.length<2)return message('No two decoys remain.');shuffle(decoys).slice(0,2).forEach(letter=>{state.letters=state.letters.filter(x=>x!==letter)});state.coins-=cost;saveCoins();message('Letter Purge removed two decoys.');render()}
 function clearCell(){if(!state.selected)return;let{r,c}=state.selected;if(!state.locked[r][c]){if(settings.notes)state.notes[r][c].clear();else{state.player[r][c]=null;state.status[r][c]=null}renderGrid()}}
 function message(text){$('message').textContent=text;clearTimeout(message.t);message.t=setTimeout(()=>$('message').textContent='',2200)}
 function end(win,reason){if(state.over)return;state.over=true;clearInterval(timer);let elapsed=Math.round((Date.now()-state.started)/1000);let metrics=loadMetrics(),key=String(state.n),entry=metrics[key]||{played:0,wins:0,totalTime:0,fastest:null,guesses:Array(state.n+1).fill(0)};entry.played++;if(win){const bonus = Math.round((state.n * 180) + (getModeBalance().completionBonus || 300) + (state.hints === 0 ? 220 : 0) + ((settings.diff === 'hard' ? 180 : settings.diff === 'expert' ? 260 : settings.diff === 'nightmare' ? 350 : 120)));state.score += bonus + (settings.mode === 'relaxed' ? Math.max(0,500-state.moves*3) : 0);state.coins += 250 + (state.n * 25) + (state.hints === 0 ? 75 : 0);saveCoins();entry.wins++;entry.totalTime+=elapsed;entry.fastest=entry.fastest===null?elapsed:Math.min(entry.fastest,elapsed);entry.guesses[Math.min(state.guesses,state.n)]++ ;confetti()}metrics[key]=entry;saveMetrics(metrics);let best=Number(localStorage.swBest||0);if(state.score>best){best=state.score;localStorage.swBest=best}localStorage.swStreak=win?Number(localStorage.swStreak||0)+1:0;setTimeout(()=>showDialog(win,reason,best),150)}
 function confetti(){for(let i=0;i<42;i++){let e=document.createElement('i');e.className='confetti';e.style.left=Math.random()*100+'vw';e.style.background=['#35e7dc','#ff5cab','#b8f36a','#ffd166'][rand(4)];e.style.animationDelay=Math.random()*.4+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),1900)}}
 function renderMenu(){[['sizes',[['5','5 x 5'],['6','6 x 6'],['7','7 x 7'],['8','8 x 8'],['9','9 x 9']]],['diffs',DIFF.map(x=>[x[0],x[1]])]].forEach(([id,items])=>{$(id).innerHTML=items.map(([v,t])=>`<button class="choice ${settings[id==='sizes'?'size':'diff']=== (id==='sizes'?Number(v):v)?'active':''}" data-value="${v}">${t}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{settings[id==='sizes'?'size':'diff']=id==='sizes'?Number(b.dataset.value):b.dataset.value;localStorage.setItem(settingsKey,JSON.stringify(settings));renderMenu()})});$('modes').innerHTML=MODES.map(x=>`<button class="mode ${settings.mode===x[0]?'active':''}" data-value="${x[0]}"><b>${x[1]}</b><small>${x[2]}</small></button>`).join('');$('modes').querySelectorAll('button').forEach(b=>b.onclick=()=>{settings.mode=b.dataset.value;localStorage.setItem(settingsKey,JSON.stringify(settings));renderMenu()});let options=[['notes','Pencil marks'],['qwerty','QWERTY keyboard'],['hard','Strict hard mode'],['crossword','Dual-axis words'],['fog','Fade feedback']];$('settings').innerHTML=options.map(([key,label])=>`<button class="setting ${settings[key]?'active':''}" data-setting="${key}">${label}: ${settings[key]?'On':'Off'}</button>`).join('');$('settings').querySelectorAll('button').forEach(b=>b.onclick=()=>{let key=b.dataset.setting;settings[key]=!settings[key];localStorage.setItem(settingsKey,JSON.stringify(settings));renderMenu()});let metrics=loadMetrics(),entry=metrics[String(settings.size)]||{played:0,wins:0,totalTime:0,fastest:null,guesses:[]},dist=entry.guesses||[],max=Math.max(1,...dist);$('metrics').innerHTML=`<h2>Stats for ${settings.size} x ${settings.size}</h2><p class="tips">Win rate: ${entry.played?Math.round(entry.wins/entry.played*100):0}% | Average: ${entry.wins?fmtSeconds(entry.totalTime/entry.wins):'--'} | Fastest: ${entry.fastest===null?'--':fmtSeconds(entry.fastest)}</p><div class="chart">${dist.map((count,i)=>`<div class="chart-row"><span>${i+1}</span><span class="bar" style="width:${Math.max(2,count/max*100)}%"></span><span>${count}</span></div>`).join('')}</div>`}
-function renderGrid(){let n=state.n,g=$('grid'),bad=conflicts();g.style.aspectRatio='auto';g.innerHTML='';for(let r=0;r<n;r++){let line=document.createElement('div'),cells=document.createElement('div'),feedback=document.createElement('div');line.className='row-line';cells.className='row-cells';cells.style.gridTemplateColumns=`repeat(${n},1fr)`;feedback.className='row-feedback '+(state.rowFeedback[r]?'':'empty');feedback.innerHTML=state.rowFeedback[r]||'Clues';for(let c=0;c<n;c++){let e=document.createElement('button'),notes=[...state.notes[r][c]];e.className='cell '+(state.mask[r][c]?'given ':'')+(state.locked[r][c]&&!state.mask[r][c]?'locked ':'')+(bad[r][c]?' conflict ':'')+(state.selected?.r===r&&state.selected?.c===c?' selected':r===state.active?' active-row':'')+(state.anim?.r===r&&state.anim?.c===c?' '+state.anim.cls:'')+(notes.length&&!state.player[r][c]?' notes':'');e.innerHTML=state.player[r][c]?`<span class="cell-value">${state.player[r][c]}</span>`:notes.map(x=>`<span class="note">${x}</span>`).join('');e.onclick=()=>{state.active=r;state.selected=state.locked[r][c]?null:{r,c};renderGrid();renderStats()};cells.appendChild(e)}line.append(cells,feedback);g.appendChild(line)}$('rowLabel').textContent=state.active+1}
+function renderGrid(){let n=state.n,g=$('grid'),bad=conflicts();g.style.aspectRatio='auto';g.innerHTML='';g.classList.toggle('scan', !!state.boardScan);for(let r=0;r<n;r++){let line=document.createElement('div'),cells=document.createElement('div'),feedback=document.createElement('div');line.className='row-line';cells.className='row-cells';cells.style.gridTemplateColumns=`repeat(${n},1fr)`;feedback.className='row-feedback '+(state.rowFeedback[r]?'revealed ':'')+(state.rowFeedback[r]?'':'empty');feedback.innerHTML=state.rowFeedback[r]||'Clues';for(let c=0;c<n;c++){let e=document.createElement('button'),notes=[...state.notes[r][c]];let classes=[
+ 'cell',
+ state.mask[r][c] ? 'given' : '',
+ state.locked[r][c] && !state.mask[r][c] ? 'locked' : '',
+ bad[r][c] ? 'conflict' : '',
+ state.selected && state.selected.r===r && state.selected.c===c ? 'selected' : (r===state.active ? 'active-row' : ''),
+ state.anim && state.anim.r===r && state.anim.c===c ? state.anim.cls : '',
+ state.rowPulse===r ? 'row-pulse' : '',
+ state.hintFlash && state.hintFlash[0]===r && state.hintFlash[1]===c ? 'hint-flash' : '',
+ state.lastSignal && state.lastSignal.r===r && state.lastSignal.c===c ? 'pink-signal' : '',
+ state.lastLetter && state.lastLetter.r===r && state.lastLetter.c===c ? 'letter-pop' : '',
+ notes.length && !state.player[r][c] ? 'notes' : '',
+ state.status[r][c]==='green' ? 'pink-signal' : ''
+].filter(Boolean).join(' ');e.className=classes;e.innerHTML=state.player[r][c]?`<span class="cell-value">${state.player[r][c]}</span>`:notes.map(x=>`<span class="note">${x}</span>`).join('');e.onclick=()=>{state.active=r;state.selected=state.locked[r][c]?null:{r,c};state.lastLetter={r,c};setTimeout(()=>{state.lastLetter=null;renderGrid();},200);renderGrid();renderStats()};cells.appendChild(e)}line.append(cells,feedback);g.appendChild(line)}$('rowLabel').textContent=state.active+1}
 function renderKeyboard(){let letters=settings.qwerty?'QWERTYUIOPASDFGHJKLZXCVBNM'.split(''):state.letters.slice();letters=letters.filter(x=>state.letters.includes(x));$('keyboard').innerHTML=letters.map(x=>`<button class="key ${state.rank[x]?'rank'+state.rank[x]:''}">${x}</button>`).join('');$('keyboard').querySelectorAll('button').forEach((b,i)=>b.onclick=()=>place(letters[i]))}
-function renderStats(){let a=[`<div class="stat">Score<b>${state.score}</b></div>`,`<div class="stat">Coins<b>${state.coins}</b></div>`];if(['wordle','challenger'].includes(settings.mode))a.push(`<div class="stat ${state.wrong>=state.wrongLimit-2?'danger':''}">Wrong total<b>${state.wrong}/${state.wrongLimit}</b></div>`);if(settings.mode==='strike')a.push(`<div class="stat ${state.strikes>1?'danger':''}">Strikes<b>${state.strikes}/3</b></div>`);if(settings.mode==='timed')a.push(`<div class="stat ${state.time<25?'danger':'warn'}">Time<b>${fmt(state.time)}</b></div>`);if(settings.mode==='conveyor')a.push(`<div class="stat warn">Drop<b>${fmtSeconds(45-state.conveyorElapsed)}</b></div>`);a.push(`<div class="stat">Best<b>${localStorage.swBest||0}</b></div><div class="stat">Streak<b>${localStorage.swStreak||0}</b></div>`);$('stats').innerHTML=a.join('')}
+function renderStats(){let a=[`<div class="stat">Score<b>${state.score}</b></div>`,`<div class="stat">Coins<b>${state.coins}</b></div>`];if(['wordle','challenger'].includes(settings.mode))a.push(`<div class="stat ${state.wrong>=state.wrongLimit-2?'danger':''}">Wrong total<b>${state.wrong}/${state.wrongLimit}</b></div>`);if(settings.mode==='strike')a.push(`<div class="stat ${state.strikes>1?'danger':''}">Strikes<b>${state.strikes}/3</b></div>`);if(settings.mode==='timed')a.push(`<div class="stat ${state.time<25?'danger':'warn'}" style="${state.time<25?'animation:warning-pulse .7s ease-in-out infinite;':''}">Time<b>${fmt(state.time)}</b></div>`);if(settings.mode==='conveyor')a.push(`<div class="stat warn">Drop<b>${fmtSeconds(45-state.conveyorElapsed)}</b></div>`);a.push(`<div class="stat">Best<b>${localStorage.swBest||0}</b></div><div class="stat">Streak<b>${localStorage.swStreak||0}</b></div>`);$('stats').innerHTML=a.join('')}
 function render(){renderGrid();renderKeyboard();renderStats();$('notesBtn').textContent='Notes: '+(settings.notes?'On':'Off');$('hint').textContent='Hint -800';$('purge').textContent='Purge -'+purgeCost();$('purge').disabled=state.coins<purgeCost();$('submit').disabled=settings.mode==='blueprint';$('submit').textContent=settings.mode==='blueprint'?'Deduce Rows':'Submit Row'}
 function showDialog(win,reason,best){$('dialog').className='dialog '+(win?'win':'lose');$('dialog').innerHTML=`<h2>${win?'GRID SOLVED':'GAME OVER'}</h2><p>${reason}</p><div class="metrics"><div class="stat">Score<b>${state.score}</b></div><div class="stat">Moves<b>${state.moves}</b></div><div class="stat">Best<b>${best}</b></div></div><div class="actions"><button class="control submit" id="retry">Retry</button><button class="control" id="new">New puzzle</button></div>`;$('overlay').classList.remove('hidden');$('retry').onclick=()=>{overlayOff();newGame();render()};$('new').onclick=()=>{overlayOff();goMenu()}}
 function overlayOff(){$('overlay').classList.add('hidden')}
@@ -116,20 +130,36 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
   const style = document.createElement('style');
   style.textContent = `
     :root {
-      --bg:#070b12;
-      --ink:#f4f7fb;
-      --muted:#8996a8;
-      --panel:#111a27;
-      --panel-hi:#182638;
-      --line:#2b3c51;
-      --cyan:#35e7dc;
-      --pink:#ff5cab;
-      --lime:#b8f36a;
+      --bg:#090b13;
+      --ink:#f8f5ff;
+      --muted:#b0adcc;
+      --panel:#171b2d;
+      --panel-hi:#1f2340;
+      --line:#3a3658;
+      --cyan:#5fe8f5;
+      --cyan-deep:#29c8d8;
+      --pink:#ff6bb5;
+      --pink-soft:#ff93d0;
+      --pink-bright:#ffb9e6;
+      --pink-glow:rgba(255,107,181,.34);
+      --lime:#bfdc7d;
       --gold:#ffd166;
-      --red:#ff667a;
-      --shadow:0 20px 70px #0008;
-      --success:#6cf3a4;
+      --gold-warm:#ffb84d;
+      --red:#ff6a7a;
+      --red-soft:#ff8e99;
+      --shadow:0 26px 80px rgba(0,0,0,.45);
+      --success:#7bf0b4;
       --warning:#ffce66;
+    }
+
+    .made-by {
+      margin-top: 12px;
+      text-align: center;
+      color: var(--pink-soft);
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      opacity: .9;
     }
 
     .wrap {
@@ -140,6 +170,73 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
 
     .screen.active {
       display:block;
+    }
+
+    @keyframes board-scan {
+      0% { transform: translateX(-120%); opacity:0; }
+      12% { opacity:.35; }
+      35% { transform: translateX(110%); opacity:.22; }
+      100% { transform: translateX(120%); opacity:0; }
+    }
+
+    @keyframes row-submit-pulse {
+      0% { box-shadow:0 0 0 rgba(95,232,245,0), 0 0 0 rgba(255,107,181,0); transform:scale(1); }
+      25% { box-shadow:0 0 0 3px rgba(95,232,245,.18), 0 0 18px rgba(255,107,181,.22); transform:scale(1.02); }
+      60% { box-shadow:0 0 22px rgba(95,232,245,.28), 0 0 40px rgba(255,107,181,.24); transform:scale(1.03); }
+      100% { box-shadow:0 0 0 rgba(95,232,245,0), 0 0 0 rgba(255,107,181,0); transform:scale(1); }
+    }
+
+    @keyframes letter-pop {
+      0% { transform:scale(.82); filter:brightness(.8); }
+      50% { transform:scale(1.14); filter:brightness(1.5); }
+      100% { transform:scale(1); filter:brightness(1); }
+    }
+
+    @keyframes wrong-shake {
+      0%,100% { transform:translateX(0) rotate(0deg); }
+      15% { transform:translateX(-4px) rotate(-1.1deg); }
+      35% { transform:translateX(5px) rotate(1.2deg); }
+      50% { transform:translateX(-5px) rotate(-1deg); }
+      70% { transform:translateX(4px) rotate(1deg); }
+    }
+
+    @keyframes signal-burst {
+      0% { transform:scale(.45); opacity:0; }
+      16% { opacity:1; }
+      100% { transform:scale(1.8); opacity:0; }
+    }
+
+    @keyframes hint-flash {
+      0% { box-shadow:0 0 0 rgba(255,107,181,0), 0 0 0 rgba(255,107,181,0); }
+      30% { box-shadow:0 0 0 3px rgba(255,107,181,.3), 0 0 22px rgba(255,107,181,.8); }
+      100% { box-shadow:0 0 0 rgba(255,107,181,0), 0 0 0 rgba(255,107,181,0); }
+    }
+
+    @keyframes feedback-reveal {
+      0% { opacity:0; transform:translateY(4px); filter:blur(3px); }
+      100% { opacity:1; transform:none; filter:blur(0); }
+    }
+
+    @keyframes suction {
+      0% { transform:scale(.96); }
+      60% { transform:scale(1.08); }
+      100% { transform:scale(1); }
+    }
+
+    @keyframes clash-ripple {
+      0% { transform:scale(.4); opacity:.85; }
+      100% { transform:scale(2.2); opacity:0; }
+    }
+
+    @keyframes starburst {
+      0% { transform:scale(.2) rotate(0deg); opacity:0; }
+      10% { opacity:1; }
+      100% { transform:scale(2.5) rotate(180deg); opacity:0; }
+    }
+
+    @keyframes warning-pulse {
+      0%,100% { box-shadow:0 0 0 rgba(255,184,77,0); }
+      50% { box-shadow:0 0 0 3px rgba(255,184,77,.26), 0 0 18px rgba(255,107,181,.2); }
     }
 
     .hud {
@@ -180,12 +277,27 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
     }
 
     .board {
+      position:relative;
       background:linear-gradient(145deg,#111a27f5,#182638e8);
       border:1px solid var(--line);
       border-radius:18px;
       box-shadow:var(--shadow);
       padding:12px;
-      overflow:auto;
+      overflow:hidden;
+    }
+
+    .board::before {
+      content:"";
+      position:absolute;
+      inset:-30% 0 auto 0;
+      height:140%;
+      background:linear-gradient(90deg, transparent 0%, rgba(255,107,181,.08) 45%, rgba(95,232,245,.14) 52%, transparent 100%);
+      transform:translateX(-120%);
+      pointer-events:none;
+    }
+
+    .board.scan::before {
+      animation:board-scan 6s ease-in-out infinite;
     }
 
     .grid {
@@ -226,12 +338,25 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
       transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
     }
 
-    .cell:hover { border-color:var(--cyan); }
-    .cell.given { background:#0b2334; color:var(--cyan); }
-    .cell.locked { background:#172536; color:var(--gold); }
-    .cell.selected { outline:2px solid var(--gold); box-shadow:0 0 0 2px rgba(255,209,102,.25); }
-    .cell.conflict { border-color:var(--red); box-shadow:0 0 0 2px rgba(255,102,122,.18); }
-    .cell.active-row { background:rgba(53,231,220,.08); }
+    .cell:hover { border-color:var(--pink-soft); }
+    .cell.given { background:rgba(32,49,72,.9); color:var(--cyan); }
+    .cell.locked { background:rgba(26,35,60,.95); color:var(--pink-soft); }
+    .cell.selected { outline:2px solid var(--pink-soft); box-shadow:0 0 0 2px rgba(255,107,181,.22); animation:suction .22s ease; }
+    .cell.conflict { border-color:var(--red); box-shadow:0 0 0 2px rgba(255,106,122,.18); animation:wrong-shake .34s ease; }
+    .cell.active-row { background:rgba(95,232,245,.08); }
+    .cell.row-pulse { animation:row-submit-pulse .72s ease; }
+    .cell.letter-pop { animation:letter-pop .24s ease; }
+    .cell.hint-flash { animation:hint-flash .58s ease; }
+    .cell.pink-signal::after {
+      content:"";
+      position:absolute;
+      inset:-6px;
+      border-radius:14px;
+      border:1px solid rgba(255,107,181,.75);
+      background:radial-gradient(circle, rgba(255,107,181,.32), transparent 70%);
+      animation:signal-burst .52s ease-out forwards;
+      pointer-events:none;
+    }
     .cell.notes {
       display:grid;
       grid-template-columns:repeat(3,1fr);
@@ -271,11 +396,16 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
       font-size:clamp(8px,1.6vw,12px);
       line-height:1.15;
       text-align:center;
+      animation:feedback-reveal .28s ease;
     }
 
     .row-feedback.empty {
       color:var(--muted);
       font-weight:500;
+    }
+
+    .row-feedback.revealed {
+      box-shadow:0 0 0 1px rgba(255,107,181,.12), 0 0 18px rgba(95,232,245,.16);
     }
 
     .row-note {
@@ -305,12 +435,14 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
       min-height:46px;
       border-radius:10px;
       border:1px solid var(--line);
-      background:#101d2e;
+      background:linear-gradient(180deg,#131f30,#0e1727);
       color:var(--ink);
       font-weight:700;
       font-size:1rem;
+      transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
     }
 
+    .key:active { transform:scale(.97); }
     .key.rank1 { border-color:var(--lime); color:var(--lime); }
     .key.rank2 { border-color:var(--gold); color:var(--gold); }
     .key.rank3 { border-color:var(--cyan); color:var(--cyan); }
@@ -402,12 +534,18 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
       padding:9px 12px;
       font-size:.84rem;
       min-height:42px;
+      transition:transform .15s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .choice:hover, .mode:hover, .setting:hover {
+      box-shadow:0 0 18px rgba(255,107,181,.14);
     }
 
     .choice.active {
-      background:var(--cyan);
-      border-color:var(--cyan);
-      color:#041d1d;
+      background:linear-gradient(135deg,var(--pink-soft),var(--cyan));
+      border-color:transparent;
+      color:#111827;
+      box-shadow:0 0 18px rgba(255,107,181,.25);
     }
 
     .metrics-panel {
@@ -524,6 +662,38 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
 
     .dialog.win h2 { color:var(--cyan); }
     .dialog.lose h2 { color:var(--pink); }
+
+    .confetti {
+      position:fixed;
+      top:-10px;
+      width:10px;
+      height:16px;
+      border-radius:3px;
+      opacity:0.9;
+      animation:confetti-fall 1.8s ease-in forwards;
+      z-index:100;
+      pointer-events:none;
+    }
+
+    @keyframes confetti-fall {
+      0% { transform:translateY(0) rotate(0deg) scale(1); opacity:1; }
+      25% { transform:translateY(18vh) rotate(90deg) scale(1.08); }
+      100% { transform:translateY(90vh) rotate(220deg) scale(.75); opacity:0; }
+    }
+
+    .starburst {
+      position:fixed;
+      left:50%;
+      top:50%;
+      width:220px;
+      height:220px;
+      transform:translate(-50%, -50%) scale(.2);
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,107,181,.22), rgba(95,232,245,.08) 35%, transparent 70%);
+      animation:starburst .9s ease-out forwards;
+      pointer-events:none;
+      z-index:45;
+    }
 
     .metrics {
       display:grid;
