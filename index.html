@@ -31,7 +31,7 @@
   <div class="board"><div id="grid" class="grid"></div></div>
   <div id="message" class="message" aria-live="polite"></div>
   <div id="keyboard" class="keyboard"></div>
-  <div class="actions"><button id="notesBtn" class="control">Notes: Off</button><button id="clear" class="control">Clear</button><button id="hint" class="control">Hint -800</button><button id="purge" class="control">Letter Purge</button><button id="reroll" class="control">Re-roll -250</button><button id="submit" class="control submit">Submit Row</button></div>
+  <div class="actions"><button id="notesBtn" class="control">Notes: Off</button><button id="clear" class="control">Clear</button><button id="hint" class="control">Hint -800</button><button id="purge" class="control">Letter Purge</button><button id="reroll" class="control">Re-roll -250</button><button id="giveup" class="control giveup">Give Up</button><button id="submit" class="control submit">Submit Row</button></div>
 </section>
 </main>
 <div id="overlay" class="overlay hidden"><div id="dialog" class="dialog"></div></div>
@@ -47,6 +47,11 @@ const WORDS={
 WORDS[5].push(...'ADORE ADULT AFTER AGENT ALIVE ALLOW ALONE ANGLE ANGRY ANNUAL APPLY ARGUE ARISE ARRAY AWARE BADGE BASIC BEACH BEGIN BELOW BIRTH BLEND BLIND BLOCK BLOOM BLUNT BONUS BOOST BRAIN BRAND BROAD BROWN BUILD BURST CARRY CATCH CAUSE CIRCLE CLEAN CLEAR CLIMB CLOCK CLOSE COACH COAST COLOR COUNT COVER CRAFT CREAM CROWD CROWN CURVE DAILY DEBUT DECAY DELTA DEPTH DETAIL DIRTY DOUBT DOZEN EAGER EARLY ELBOW ELDER ELITE EMPTY ENJOY ENTER EQUAL EVENT EXACT EXTRA FAITH FALSE FANCY FOCUS FORCE FRAME FRESH FRONT GRADE GRANT GRASS GREAT GREEN GROUND GROUP HAPPY HEAVY HIDDEN HUMAN HURRY INNER INPUT ISSUE KNOWN LABEL LAYER LEARN LEVEL LOCAL LOGIC LOOSE LOVER LOWER LUCKY LUNAR MAJOR MATCH MAYBE MIGHT MINOR MIXED MONTH MOUSE MOVIE NERVE NOVEL OFFER ORDER ORGAN OTHER PAINT PANEL PAPER PATCH PEACE PHASE PHONE PIECE PITCH PLACE PLAIN PLANE PLANT PLATE PLEAD PLUMB POCKET POEM POWER PRESS PRINT PRIOR PROOF PROUD PROVE QUEEN QUIET RAISE RANGE RAPID REACH READY REFER REGAL RELAX REPEAT RIGHT RIVER ROUGH ROUTE ROYAL RURAL SCALE SCENE SCOPE SEVEN SHAPE SHARE SHEET SHIFT SHORT SILLY SKILL SLIDE SMALL SOLAR SOUND SOUTH SPEED SPEND SPICE SPREAD STAFF STAIR STARE START STATE STEEL STEEP STEER STILL STORE STRONG STUCK SWEET TABLE TASTE TEACH TEAM TEETH THANK THEME THROW TIGHT TITLE TODAY TOPIC TOTAL TOWER TRACE TRAIN TREAT TRUST TRUTH TWIST UNDER UNION UNTIL UPPER VALUE VISIT WASTE WATER WEIRD WHOLE WORLD WRITE WRONG'.split(' '));
 WORDS[6].push(...'ABSORB ACCESS ACROSS ACTUAL AFFECT AFFORD ANIMAL ANSWER APPEAR ARRIVE ASLEEP ATTACK AUTUMN BASKET BATTLE BEAUTY BECOME BEYOND BORDER BOTTLE BOTTOM BRANCH BREEZE BRIDGE BRIGHT BROKEN BRONZE BUTTON CENTER CHANGE CHARGE CHOICE CHOOSE CHORUS CIRCLE CLIENT COFFEE COLLECT COLUMN COMMIT COMMON COMPEL CONCRETE CORNER COUPLE COURSE CREATE CRISIS CUSTOM DANGER DECIDE DECODE DEEPER DEGREE DEMAND DEPLOY DESIGN DESIRE DETAIL DEVICE DIRECT DOCTOR DOMAIN DOUBLE DRIVEN EFFECT EFFORT EITHER EMERALD ENGINE ENTIRE ESCAPE ESTATE ETHICS EXCITE EXPERT EXTEND FABRIC FINGER FINISH FOREST FORMAL FORMER FOSSIL FROZEN FUTURE GALAXY GATHER GENTLE GROWTH HONEST HUNGER IGNORE INCOME INDEED INJURY INSIDE INVITE ISLAND ITSELF KITTEN LAUNCH LIQUID LIVING LONELY LUXURY MAGNET MANAGE MARGIN MARBLE METHOD MIDDLE MINUTE MUSEUM MYSELF NATIVE NEARBY NOTICE OBJECT OFFICE OPPOSE OPTION ORIGIN OUTPUT PEOPLE PERIOD PHRASE PILLOW POLICY POPULAR POTATO PRAISE PRETTY PROFIT PROMPT PROPER PROUDLY PUBLIC PURPLE READER REASON RECORD REFUSE REGARD REGION REJECT RELATE REMOVE REPAIR REPORT REQUEST RESCUE RETAIL RETURN REVEAL REVIEW RISING RITUAL ROCKET SAFELY SCARCE SEARCH SECRET SELECT SENIOR SERIES SHADOW SIGNAL SILENT SKETCH SKIRTS SMOOTH SOLVED SOURCE SPIRIT STABLE STRAIN STRING STRONG SUBMIT SUMMER SUPPLY SWITCH SYMBOL SYSTEM TARGET TEMPLE THINGS THIRTY THOUGHT TIMELY TOGGLE TOWARD TRAVEL UNFAIR UNITED UNLIKE UPDATE USEFUL VALLEY VARIED VIOLET VISION WANDER WEIGHT WINDOW WINTER WONDER'.split(' '));
 WORDS[7].push(...'ACCOUNT ADDRESS ADVANCE AGAINST ALREADY ANOTHER ANYTIME ARRANGE ARTICLE BALANCE BECAUSE BETWEEN BOTTOMS BRACKET BREATHE BRIGHTER BROTHER BUILDER CARRIAGE CEILING CENTRAL CHAPTER CHOICES CLIMATE COMPARE COMPLEX CONTROL CORRECT COUNTER COUNTRY CREATING CURRENT DEALING DECIDED DEFAULT DEVELOP DIFFERENT DIGITAL EASIEST EIGHTHS ELEMENT EMBRACE EMOTION ENCRYPT EXPLAIN EXPRESS EXTREME FEATURE FEELING FIELDED FINALLY FINDING FLOWERS FORWARD FREEDOM FRIENDS GENERAL GENUINE GREATER HEADING HEALTHY IMAGINE IMPROVE INCLUDE INITIAL INQUIRY INSIGHT INSTANT INSTEAD JOURNAL JUSTICE KEEPING KNOWING LICENSE LIMITED MANAGER MEASURE MESSAGE MISSING MONITOR MORNING NATURAL NEITHER OBSERVE OPINION ORGANIC PATIENT PATTERN PERFECT PICTURE PLACING PLAYERS PORTION PREMIUM PRESENT PRIMARY PRIVATE PROCESS PRODUCT PROFILE PROGRAM PROJECT PROMISE PROTECT PROVIDE PURPOSE QUALITY REALITY RECEIVE RECORDS REFLECT RELATED REMAINS REQUESTS REQUIRES RESOLVE REVENUE SENDING SERIOUS SEVERAL SHARING SPECIAL STORAGE SUBJECT SUCCESS SUPPORT SURFACE TEACHER THROUGH TOGETHER TOWARDS TRANSFER TRIGGER UNUSUAL VARIETY VEHICLE WEATHER WITHOUT WORKING'.split(' '));
+WORDS[5].push(...'ANGEL ARROW ASSET AVOID BERRY BLAZE BLOOD BOUNTY BRAVO CANDOR CHESS CHOICE CLOVE COMET CORAL CRANE CRYSTAL DEWLY EBONY ELANV FABLE FLAIR GAZER GIGGLE GLARE GLEAM GLINT GLOWS GONER GRACE HAVEN HELLO HERON HONEY IONIC JELLY KNOTS LAMPS LAYER LIGER LILAC LUNGE MANGO MARCH MERRY MINTY MODES MOTHER NEXUS NOBLY OCEAN ODDLY OLIVE OZONE PASTEL PILOT PIVOT PLEAS POKER PRAIR PULSE QUEEN RAVEN RIVER RUBY RULER SCRAP SHINY SIGNAL SLEEK SLYLY SMILE SNOOT SOFTY SOLVE SPARK SPRINT STONE SUNNY SWORD TACTIC TEASE THORN TIDED TREAT TULIP VIVID WALTZ WISER YACHT ZEPHYR'.split(' '));
+WORDS[6].push(...'ATTACK BARRIER BEACON BEHOLD BRAVERY CABINET CATALOG CHARGE CHECKER CRACKLE DELIGHT DIAMOND DYNAMIC ECHOES EXPRESS FARMING GARDEN GLOWING HABITAT INFUSE LANTERN LIBRARY MARRIOT MISSION OASIS ORCHID OUTRIDE PARODY PICKING POINTER POSTURE RANGER RATHER REFINE RITUAL SEABIRD SHAPED SPRINTS STATION SYMBAL TAILOR THREAD THRIVE TUNNEL UNIQUE VORTEX WATERS WELCOME WILLOW'.split(' '));
+WORDS[7].push(...'AEROBIC ALLEGRO AMAZING ANCHORS BANKROLL BEHAVIOR BRACING CAPSTONE CATALOGS CHOOSING CIRCLET CLUSTER COMBINE CONTEXT DIAMETER FALCONRY FURNITURE GATHERED HARBORER HARMLESS ILLUSION KINETIC LITERAL MANGROVE MOUNTAIN ORIGAMI OUTPOST PICTURES PLAYBOOK POCKETS PORTABLE POSITIVE QUIETLY RADIANT REPEATED RETROFIT SAPPHIRE SEQUENCE SIGNALS SPARKING STICKERS STANZA STRATUM STRETCH TAILORING THRIVING UNEARTH UPRISING VERTICAL VISUALS WELCOME'.split(' '));
+WORDS[8].push(...'ADVENTURE ALGORITHM ARBORIST BARBELLON BRIGHTEST CHARMING CIRCULAR COASTLINE HARBINGER HONEYCOMB ILLUMINATE JUXTAPOSE KITEBOARD LUMENFLOW MICROGRID NAVIGATION OUTMATCHED PAVEMENT PLAYHOUSE PROTOTYPE RAINSTORM SAPPHIRE SEAOTTER SHARPENED SKATEBOARD SONGBIRD SPECTRUM STRETCHED THUNDERST TICKETING VINTAGEY WAVEFORM'.split(' '));
+WORDS[9].push(...'AURORALITY BACKLIGHTS BRIGHTENED CHROMATIC DIAMONDBE SKYBRIDGE STARFALLS TUNNELING WATERSHED WORKSTREAM'.split(' '));
 WORDS[5].push('SATOR','AREPO','TENET','OPERA','ROTAS');
 const BOX={5:null,6:[2,3],7:null,8:[2,4],9:[3,3]};
 const CROSSWORD={5:'SATOR AREPO TENET OPERA ROTAS'.split(' ')};
@@ -98,6 +103,8 @@ function hint(){if(settings.mode==='nohint'){message('No-hint mode is active.');
 function getRowMultiplier(){const streak=state.rowStreak||0;return streak>=3?4:streak>=2?3:streak>=1?2:1}
 function purge(){let cost=purgeCost(),decoys=state.letters.filter(letter=>!state.solution.flat().includes(letter));if(state.over||state.paused)return;if(state.coins<cost)return message('Need '+cost+' coins for Letter Purge.');if(decoys.length<2)return message('No two decoys remain.');shuffle(decoys).slice(0,2).forEach(letter=>{state.letters=state.letters.filter(x=>x!==letter)});state.coins-=cost;saveCoins();message('Letter Purge removed two decoys.');render()}
 function rerollPuzzle(){if(state.over||state.paused)return;const cost=Math.max(200,250+(settings.size-5)*60);if(state.coins<cost){message('Need '+cost+' coins to re-roll this board.');return}state.coins-=cost;saveCoins();newGame();message('Board re-rolled. Fresh letters, same rules.');render()}
+function triggerGiveUpReveal(){const board=document.querySelector('.board');if(board){board.classList.remove('giveup-reveal');void board.offsetWidth;board.classList.add('giveup-reveal');setTimeout(()=>board.classList.remove('giveup-reveal'),1200)}}
+function giveUp(){if(state.over||state.paused)return;const answer=state.solution.map(row=>row.join('')).join(' • ');state.over=true;state.paused=true;clearInterval(timer);state.player=state.solution.map(row=>row.slice());state.status=state.solution.map(row=>row.map(()=> 'green'));state.locked=state.solution.map(row=>row.map(()=>true));state.rowLocked=state.solution.map(()=>true);state.selected=null;triggerGiveUpReveal();message('Answer revealed: '+answer);showDialog(false,'You folded. The answer was '+answer+'.',Number(localStorage.swBest||0));render();}
 function clearCell(){if(!state.selected)return;let{r,c}=state.selected;if(!state.locked[r][c]){if(settings.notes)state.notes[r][c].clear();else{state.player[r][c]=null;state.status[r][c]=null}renderGrid()}}
 function message(text){$('message').textContent=text;clearTimeout(message.t);message.t=setTimeout(()=>$('message').textContent='',2200)}
 function end(win,reason){if(state.over)return;state.over=true;clearInterval(timer);let elapsed=Math.round((Date.now()-state.started)/1000);let metrics=loadMetrics(),key=String(state.n),entry=metrics[key]||{played:0,wins:0,totalTime:0,fastest:null,guesses:Array(state.n+1).fill(0)};entry.played++;if(win){const bonus = Math.round((state.n * 180) + (getModeBalance().completionBonus || 300) + (state.hints === 0 ? 220 : 0) + ((settings.diff === 'hard' ? 180 : settings.diff === 'expert' ? 260 : settings.diff === 'nightmare' ? 350 : 120)));state.score += bonus + (settings.mode === 'relaxed' ? Math.max(0,500-state.moves*3) : 0);state.coins += 250 + (state.n * 25) + (state.hints === 0 ? 75 : 0);saveCoins();entry.wins++;entry.totalTime+=elapsed;entry.fastest=entry.fastest===null?elapsed:Math.min(entry.fastest,elapsed);entry.guesses[Math.min(state.guesses,state.n)]++ ;confetti()}metrics[key]=entry;saveMetrics(metrics);let best=Number(localStorage.swBest||0);if(state.score>best){best=state.score;localStorage.swBest=best}localStorage.swStreak=win?Number(localStorage.swStreak||0)+1:0;setTimeout(()=>showDialog(win,reason,best),150)}
@@ -119,11 +126,11 @@ function renderGrid(){let n=state.n,g=$('grid'),bad=conflicts();g.style.aspectRa
 ].filter(Boolean).join(' ');e.className=classes;e.innerHTML=state.player[r][c]?`<span class="cell-value">${state.player[r][c]}</span>`:notes.map(x=>`<span class="note">${x}</span>`).join('');e.onclick=()=>{state.active=r;state.selected=state.locked[r][c]?null:{r,c};state.lastLetter={r,c};setTimeout(()=>{state.lastLetter=null;renderGrid();},200);renderGrid();renderStats()};cells.appendChild(e)}line.append(cells,feedback);g.appendChild(line)}$('rowLabel').textContent=state.active+1}
 function renderKeyboard(){let letters=settings.qwerty?'QWERTYUIOPASDFGHJKLZXCVBNM'.split(''):state.letters.slice();letters=letters.filter(x=>state.letters.includes(x));$('keyboard').innerHTML=letters.map(x=>`<button class="key ${state.rank[x]?'rank'+state.rank[x]:''}">${x}</button>`).join('');$('keyboard').querySelectorAll('button').forEach((b,i)=>b.onclick=()=>place(letters[i]))}
 function renderStats(){let a=[`<div class="stat">Score<b>${state.score}</b></div>`,`<div class="stat">Coins<b>${state.coins}</b></div>`];if(['wordle','challenger'].includes(settings.mode))a.push(`<div class="stat ${state.wrong>=state.wrongLimit-2?'danger':''}">Wrong total<b>${state.wrong}/${state.wrongLimit}</b></div>`);if(settings.mode==='strike')a.push(`<div class="stat ${state.strikes>1?'danger':''}">Strikes<b>${state.strikes}/3</b></div>`);if(settings.mode==='timed')a.push(`<div class="stat ${state.time<25?'danger':'warn'}" style="${state.time<25?'animation:warning-pulse .7s ease-in-out infinite;':''}">Time<b>${fmt(state.time)}</b></div>`);if(settings.mode==='conveyor')a.push(`<div class="stat warn">Drop<b>${fmtSeconds(45-state.conveyorElapsed)}</b></div>`);a.push(`<div class="stat">Chain<b>${getRowMultiplier()}x</b></div><div class="stat">Best<b>${localStorage.swBest||0}</b></div><div class="stat">Streak<b>${localStorage.swStreak||0}</b></div>`);$('stats').innerHTML=a.join('')}
-function render(){renderGrid();renderKeyboard();renderStats();$('notesBtn').textContent='Notes: '+(settings.notes?'On':'Off');$('hint').textContent='Hint -800';$('purge').textContent='Purge -'+purgeCost();$('reroll').textContent='Re-roll -'+Math.max(200,250+(settings.size-5)*60);$('reroll').disabled=state.coins<Math.max(200,250+(settings.size-5)*60);$('purge').disabled=state.coins<purgeCost();$('submit').disabled=settings.mode==='blueprint';$('submit').textContent=settings.mode==='blueprint'?'Deduce Rows':'Submit Row'}
+function render(){renderGrid();renderKeyboard();renderStats();$('notesBtn').textContent='Notes: '+(settings.notes?'On':'Off');$('hint').textContent='Hint -800';$('purge').textContent='Purge -'+purgeCost();$('reroll').textContent='Re-roll -'+Math.max(200,250+(settings.size-5)*60);$('reroll').disabled=state.coins<Math.max(200,250+(settings.size-5)*60);$('giveup').disabled=state.over;$('purge').disabled=state.coins<purgeCost();$('submit').disabled=settings.mode==='blueprint';$('submit').textContent=settings.mode==='blueprint'?'Deduce Rows':'Submit Row'}
 function showDialog(win,reason,best){$('dialog').className='dialog '+(win?'win':'lose');$('dialog').innerHTML=`<h2>${win?'GRID SOLVED':'GAME OVER'}</h2><p>${reason}</p><div class="metrics"><div class="stat">Score<b>${state.score}</b></div><div class="stat">Moves<b>${state.moves}</b></div><div class="stat">Best<b>${best}</b></div></div><div class="actions"><button class="control submit" id="retry">Retry</button><button class="control" id="new">New puzzle</button></div>`;$('overlay').classList.remove('hidden');$('retry').onclick=()=>{overlayOff();newGame();render()};$('new').onclick=()=>{overlayOff();goMenu()}}
 function overlayOff(){$('overlay').classList.add('hidden')}
 function goMenu(){clearInterval(timer);overlayOff();$('game').classList.remove('active');$('menu').classList.add('active');renderMenu()}
-$('start').onclick=()=>{$('menu').classList.remove('active');$('game').classList.add('active');newGame();render()};$('menuBtn').onclick=goMenu;$('notesBtn').onclick=()=>{settings.notes=!settings.notes;localStorage.setItem(settingsKey,JSON.stringify(settings));render()};$('clear').onclick=clearCell;$('hint').onclick=hint;$('purge').onclick=purge;$('reroll').onclick=rerollPuzzle;$('submit').onclick=submit;
+$('start').onclick=()=>{$('menu').classList.remove('active');$('game').classList.add('active');newGame();render()};$('menuBtn').onclick=goMenu;$('notesBtn').onclick=()=>{settings.notes=!settings.notes;localStorage.setItem(settingsKey,JSON.stringify(settings));render()};$('clear').onclick=clearCell;$('hint').onclick=hint;$('purge').onclick=purge;$('reroll').onclick=rerollPuzzle;$('giveup').onclick=giveUp;$('submit').onclick=submit;
 document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active')||state.over||state.paused)return;let k=e.key.toUpperCase();if(/^[A-Z]$/.test(k)&&state.letters.includes(k))place(k);else if(k==='ENTER')submit();else if(k==='BACKSPACE'||k==='DELETE')clearCell();else if(k.startsWith('ARROW')&&state.selected){let{r,c}=state.selected;if(k==='ARROWLEFT')c=Math.max(0,c-1);if(k==='ARROWRIGHT')c=Math.min(state.n-1,c+1);if(k==='ARROWUP')r=Math.max(0,r-1);if(k==='ARROWDOWN')r=Math.min(state.n-1,r+1);state.active=r;state.selected={r,c};renderGrid()}});renderMenu();
 </script>
 
@@ -133,18 +140,19 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
   style.textContent = `
     :root {
       --bg:#090b13;
-      --ink:#f8f5ff;
-      --muted:#b0adcc;
-      --panel:#171b2d;
-      --panel-hi:#1f2340;
-      --line:#3a3658;
-      --cyan:#5fe8f5;
-      --cyan-deep:#29c8d8;
-      --pink:#ff6bb5;
-      --pink-soft:#ff93d0;
-      --pink-bright:#ffb9e6;
-      --pink-glow:rgba(255,107,181,.34);
-      --lime:#bfdc7d;
+      --ink:#fff7ff;
+      --muted:#d7caea;
+      --panel:#190f1f;
+      --panel-hi:#241b2d;
+      --line:#4b2d52;
+      --cyan:#7feeff;
+      --cyan-deep:#39d9f2;
+      --pink:#ff72c6;
+      --pink-strong:#ff4bb5;
+      --pink-soft:#ff9ddd;
+      --pink-bright:#ffbfe8;
+      --pink-glow:rgba(255,114,198,.38);
+      --lime:#d6ff84;
       --gold:#ffd166;
       --gold-warm:#ffb84d;
       --red:#ff6a7a;
@@ -293,6 +301,12 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
       50% { box-shadow:0 0 0 3px rgba(255,184,77,.26), 0 0 18px rgba(255,107,181,.2); }
     }
 
+    @keyframes giveup-surge {
+      0% { opacity:0; transform:scale(.7); }
+      25% { opacity:1; }
+      100% { opacity:0; transform:scale(1.12); }
+    }
+
     .hud {
       display:flex;
       align-items:center;
@@ -345,8 +359,17 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
       position:absolute;
       inset:-30% 0 auto 0;
       height:140%;
-      background:linear-gradient(90deg, transparent 0%, rgba(255,107,181,.08) 45%, rgba(95,232,245,.14) 52%, transparent 100%);
+      background:linear-gradient(90deg, transparent 0%, rgba(255,107,181,.14) 45%, rgba(95,232,245,.18) 52%, transparent 100%);
       transform:translateX(-120%);
+      pointer-events:none;
+    }
+
+    .board.giveup-reveal::after {
+      content:"";
+      position:absolute;
+      inset:-10%;
+      background:radial-gradient(circle at center, rgba(255,114,198,.42), rgba(255,114,198,.14) 28%, transparent 60%);
+      animation:giveup-surge 1s ease-out forwards;
       pointer-events:none;
     }
 
@@ -510,11 +533,23 @@ document.addEventListener('keydown',e=>{if(!$('game').classList.contains('active
       min-height:46px;
       border-radius:10px;
       border:1px solid var(--line);
-      background:linear-gradient(180deg,#131f30,#0e1727);
+      background:linear-gradient(180deg,#1a1830,#0d1321);
       color:var(--ink);
       font-weight:700;
       font-size:1rem;
       transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+    }
+
+    .control.giveup {
+      background:linear-gradient(135deg, rgba(255,114,198,.24), rgba(255,114,198,.12));
+      border-color: rgba(255,114,198,.75);
+      color: var(--pink-bright);
+      box-shadow: 0 0 18px rgba(255,114,198,.18);
+    }
+
+    .control.giveup:hover {
+      transform:translateY(-2px) scale(1.01);
+      box-shadow:0 0 22px rgba(255,114,198,.34);
     }
 
     .key:active { transform:scale(.97); }
